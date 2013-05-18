@@ -11,7 +11,15 @@
     ],
 
     "require": {
+		"php": ">=5.4",
+		"balancer/bors-core": "dev-default",
+        "slim/slim": "*",
+        "kunststube/router": "*"
+    },
 
+    "require-dev": {
+        "balancer/b2-sites-kinobaza": "dev-default",
+        "balancer/b2-framework": "dev-default"
     },
 
     "autoload": {

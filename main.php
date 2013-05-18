@@ -7,26 +7,30 @@ require_once(__DIR__.'/init.php');
 
 $uri = "http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
 
-	if(b2::conf('debug.execute_trace'))
-		debug_execute_trace("b2::load_uri('$uri');");
+$b2 = new b2;
+$b2->init();
+$result = NULL;
 
-	if($object = b2::load_uri($uri))
+	if($b2->conf('debug.execute_trace'))
+		debug_execute_trace("\$b2->load_uri('$uri');");
+
+	if($object = $b2->load_uri($uri))
 	{
 		// Если это редирект
 		if(!is_object($object))
-			return b2::go($object);
+			return $b2->go($object);
 
-		$res = $object->show();
+		$result = $object->show();
 	}
 
 // Если объект всё, что нужно нарисовал сам, то больше нам делать нечего. Выход.
-if($res === true)
+if($result === true)
 	return;
 
 // Если объект вернул строку, то рисуем её и выходим.
-if($res)
+if($result)
 {
-	echo $res;
+	echo $result;
 	return;
 }
 
