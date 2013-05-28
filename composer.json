@@ -14,7 +14,8 @@
 		"php": ">=5.4",
 		"balancer/bors-core": "dev-default",
         "slim/slim": "*",
-        "kunststube/router": "*"
+        "kunststube/router": "*",
+        "balancer/bors-ext": "dev-default"
     },
 
     "require-dev": {

@@ -1,5 +1,9 @@
 <?php
 
+$request_file = $_SERVER['DOCUMENT_ROOT'].'/'.$_SERVER['REQUEST_URI'];
+if(file_exists($request_file) && !is_dir($request_file))
+	return false;
+
 $GLOBALS['b2.stat']['start_microtime'] = microtime(true);
 
 // Инициализация фреймворка
@@ -20,7 +24,7 @@ $result = NULL;
 		if(!is_object($object))
 			return $b2->go($object);
 
-		$result = $object->show();
+		$result = $object->direct_content();
 	}
 
 // Если объект всё, что нужно нарисовал сам, то больше нам делать нечего. Выход.
@@ -31,7 +35,9 @@ if($result === true)
 if($result)
 {
 	echo $result;
-	return;
+	return true;
 }
 
 @header("HTTP/1.0 404 Not Found");
+echo "Not found: <b>$uri</b>";
+return true;
