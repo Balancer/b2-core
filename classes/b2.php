@@ -34,7 +34,7 @@ class b2
 		if($id === 'NULL')
 			$id = NULL;
 
-		if(!($class_file = bors_class_loader::file($class_name)))
+		if(!($class_file = bors_class_loader::file($class_name, $this->dirs())))
 		{
 			if(config('throw_exception_on_class_not_found'))
 				return bors_throw("Class '$class_name' not found");
@@ -147,9 +147,18 @@ class b2
 	function composer() { return $this->composer; }
 	function init()
 	{
+		if(file_exists($cf = dirname(__DIR__).'/config.ini'))
+			$this->config_ini($cf);
+
 		$GLOBALS['b2.instance'] = $this;
 
-		$this->__project_classes[] = 'b2f_project';
+		if($main_project = $this->conf('project.main'))
+			$this->__project_classes[] = $main_project;
+		else
+			$this->__project_classes[] = 'b2f_project';
+
+		$this->__project_classes[] = 'b2_project';
+
 		foreach($this->__project_classes as $project_class)
 		{
 			$project = $this->load($project_class);
@@ -159,6 +168,38 @@ class b2
 
 		if(!empty($GLOBALS['composer']))
 			$this->composer = $GLOBALS['composer'];
+	}
+
+	/**
+	 * @param string $file
+	 * Загрузить .ini файл в параметры конфигурации.
+	 */
+	function config_ini($file)
+	{
+		$ini_data = parse_ini_file($file, true);
+
+		if($ini_data === false)
+			bors_throw("'$file' parse error");
+
+		foreach($ini_data as $section_name => $data)
+		{
+			if($section_name == 'global' || $section_name == 'config')
+				$this->__config = array_merge($this->__config, $data);
+			else
+				foreach($data as $key => $value)
+					$this->__config[$section_name.'.'.$key] = $value;
+		}
+	}
+
+	function dirs()
+	{
+		$dirs = array();
+		foreach($this->projects() as $project)
+		{
+			$dirs[] = $project->project_dir();
+		}
+
+		return $dirs;
 	}
 }
 
