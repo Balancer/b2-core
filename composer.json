@@ -16,7 +16,8 @@
         "slim/slim": "*",
         "kunststube/router": "*",
         "balancer/bors-ext": "dev-default",
-        "balancer/b2-project-demo": "dev-default"
+        "balancer/b2-project-demo": "dev-default",
+        "balancer/b2-app-simple-blog": "dev-default"
     },
 
     "require-dev": {
