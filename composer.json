@@ -11,18 +11,18 @@
     ],
 
     "require": {
-		"php": ">=5.4",
+		"php": ">=5.3",
 		"balancer/bors-core": "dev-default",
         "slim/slim": "*",
         "kunststube/router": "*",
-        "balancer/bors-ext": "dev-default",
-        "balancer/b2-project-demo": "dev-default",
-        "balancer/b2-app-simple-blog": "dev-default"
+        "balancer/bors-ext": "dev-default"
     },
 
     "require-dev": {
         "balancer/b2-sites-kinobaza": "dev-default",
-        "balancer/b2-framework": "dev-default"
+        "balancer/b2-framework": "dev-default",
+        "balancer/b2-project-demo": "dev-default",
+        "balancer/b2-app-simple-blog": "dev-default"
     },
 
     "autoload": {
