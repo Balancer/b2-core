@@ -19,8 +19,13 @@ class b2
 		foreach($this->projects() as $project)
 		{
 			// У каждого проекта — собственный роутер
-			if($obj = $project->router()->load_uri($uri))
-				return $obj;
+			if($router = $project->router())
+			{
+				if($obj = $router->load_uri($uri))
+					return $obj;
+			}
+			else
+				echo "Not defined router for project ".get_class($project)."<br/>\n";
 		}
 
 		return NULL;
@@ -162,8 +167,13 @@ class b2
 		foreach($this->__project_classes as $project_class)
 		{
 			$project = $this->load($project_class);
-			$project->set_b2($this);
-			$this->__projects[] = $project;
+			if($project)
+			{
+				$project->set_b2($this);
+				$this->__projects[] = $project;
+			}
+			else
+				echo "Unknown project class {$project_class}<br/>\n";
 		}
 
 		if(!empty($GLOBALS['composer']))
