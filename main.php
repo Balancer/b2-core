@@ -11,9 +11,9 @@ require_once(__DIR__.'/init.php');
 
 $uri = "http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
 
-$b2 = new b2;
-$b2->init();
 $result = NULL;
+
+$b2 = b2::factory();
 
 	if($b2->conf('debug.execute_trace'))
 		debug_execute_trace("\$b2->load_uri('$uri');");

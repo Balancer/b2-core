@@ -130,7 +130,6 @@ class b2
 		if(config('debug_objects_create_counting_details'))
 			debug_count_inc("bors_load($class_name)");
 
-
 		$object = $this->__load_object($class_name, $id, array());
 
 		if(!$object)
@@ -159,10 +158,9 @@ class b2
 
 		if($main_project = $this->conf('project.main'))
 			$this->__project_classes[] = $main_project;
-		else
-			$this->__project_classes[] = 'b2f_project';
 
-		$this->__project_classes[] = 'b2_project';
+		if(class_exists('b2_project'))
+			$this->__project_classes[] = 'b2_project';
 
 		foreach($this->__project_classes as $project_class)
 		{
@@ -211,6 +209,21 @@ class b2
 
 		return $dirs;
 	}
+
+	static function factory()
+	{
+		if(empty($GLOBALS['b2.instance']))
+		{
+			if(class_exists('b2f'))
+				b2f::init_framework();
+			else
+				require_once(dirname(__DIR__).'/init.php');
+
+			(new b2())->init();
+		}
+
+		return $GLOBALS['b2.instance'];
+	}
 }
 
-function b2_load($class_name, $id = NULL) { return $GLOBALS['b2.instance']->load($class_name, $id); }
+function b2_load($class_name, $id = NULL) { return b2::factory()->load($class_name, $id); }
