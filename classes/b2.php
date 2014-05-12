@@ -2,9 +2,9 @@
 
 class b2
 {
-	private $__config			= [];
-	private $__project_classes	= [];
-	private $__projects			= [];
+	private $__config			= array();
+	private $__project_classes	= array();
+	private $__projects			= array();
 	private $composer			= NULL;
 
 	// Вернуть значение параметра конфигурации
@@ -219,7 +219,8 @@ class b2
 			else
 				require_once(dirname(__DIR__).'/init.php');
 
-			(new b2())->init();
+			$b2 = new b2();
+			$b2->init();
 		}
 
 		return $GLOBALS['b2.instance'];

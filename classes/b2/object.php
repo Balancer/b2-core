@@ -25,6 +25,11 @@ class b2_object
 	function can_be_empty() { return true; }
 	function can_cached() { return true; }
 
+	// Не может быть переопределяемой функцией по умолчанию (_auto_objects_def()), так как вызывается в __call()
+	function auto_objects() { return array(); }
+	// Не может быть переопределяемой функцией по умолчанию (_auto_targets_def()), так как вызывается в __call()
+	function auto_targets() { return array(); }
+
 	function __call($method, $params)
 	{
 		// Ели это был вызов $obj->set_XXX($value, $db_up)
@@ -35,8 +40,15 @@ class b2_object
 		// Приоритет атрибута выше, чем приоритет параметров, так как в атрибутах
 		// может лежать изменённое значение параметра
 		// Если это где-то что-то поломает — исправить там, а не тут.
-		if(@array_key_exists($method, $this->attr))
+		if(array_key_exists($method, $this->attr))
+		{
+			// Если хранимый атрибут — функция, то вызываем её, передав параметр.
+			if(is_callable($this->attr[$method]))
+				return call_user_func_array($this->attr[$method], $params);
+
+			// Иначе — просто возвращаем значение.
 			return $this->attr[$method];
+		}
 
 		// Проверяем нет ли уже загруженного значения данных объекта
 		if(@array_key_exists($method, $this->data))
@@ -51,7 +63,6 @@ class b2_object
 		}
 
 		// Проверяем автоматические объекты.
-//		echo $this->debug_title();
 		$auto_objs = $this->auto_objects();
 		if(($f = @$auto_objs[$method]))
 		{
@@ -59,11 +70,11 @@ class b2_object
 			{
 				$property = $m[2];
 				if(config('orm.auto.cache_attr_skip'))
-					return bors_load($m[1], $this->get($property));
+					return b2::load($m[1], $this->get($property));
 				else
 				{
 					$property_value = $this->get($property);
-					$value = bors_load($m[1], $property_value);
+					$value = b2::load($m[1], $property_value);
 					$this->__auto_objects[$method] = compact('property', 'property_value', 'value');
 					return $value;
 				}
@@ -138,5 +149,107 @@ defined at {$this->class_file()}<br/>
 		$this->attr[$prop] = $value; // У атрибутов выше приоритет. Так что их тоже надо менять. Ну а данные — они на запись.
 		$this->data[$prop] = $value;
 		return $this;
+	}
+
+	function get($name, $default = NULL)
+	{
+		if(!$name)
+			return NULL;
+
+		if(method_exists($this, $name))
+		{
+			$value = NULL;
+			try
+			{
+				$value = call_user_func_array(array($this, $name), $params);
+			}
+			catch(Exception $e)
+			{
+				bors_debug::syslog('get-exception', "Exception ".$e->getMessage()." while get ".get_class($this)."->name()");
+				$value = NULL;
+			}
+
+			return $value;
+		}
+
+		// У атрибутов приоритет выше, так как они могут перекрывать data.
+		// Смотри также в __call
+		if(array_key_exists($name, $this->attr))
+		{
+			// Если хранимый атрибут — функция, то вызываем её, передав параметр.
+			if(is_callable($this->attr[$name]))
+				return call_user_func_array($this->attr[$name], $params);
+
+			// Иначе — просто возвращаем значение.
+			return $this->attr[$name];
+		}
+
+		if(@array_key_exists($name, $this->data))
+			return $this->data[$name];
+
+		if($name == 'this')
+			return $this;
+
+		// Проверяем параметры присоединённых объектов
+		if($prop_joins = @$this->_prop_joins)
+			foreach($prop_joins as $x)
+				if(array_key_exists($name, $x->data))
+					return $this->attr[$name] = $x->data[$name];
+
+		// Проверяем автоматические объекты.
+		$auto_objs = $this->auto_objects();
+		if(($f = @$auto_objs[$name]))
+		{
+			if(preg_match('/^(\w+)\((\w+)\)$/', $f, $m))
+			{
+				try { $value = bors_load($m[1], $this->get($m[2])); }
+				catch(Exception $e) { $value = NULL; }
+				return $this->attr[$name] = $value;
+			}
+		}
+
+		// Автоматические целевые объекты (имя класса задаётся)
+		$auto_targs = $this->auto_targets();
+		if(($f = @$auto_targs[$name]))
+		{
+			if(preg_match('/^(\w+)\((\w+)\)$/', $f, $m))
+				return $this->attr[$name] = bors_load($this->get($m[1]), $this->get($m[2]));
+		}
+
+		// Проверяем одноимённые переменные (var $title = 'Files')
+		if(property_exists($this, $name))
+			return $this->set_attr($name, $this->$name);
+
+		// Ищем методы, перекрываемые переменным по умолчанию
+		$m = "_{$name}_def";
+		if(method_exists($this, $m))
+		{
+			// Try убран, так как нужно решить, как обрабатывать всякие function _title_def() { bors_throw('Заголовок не указан!';} — см. bors_rss
+			return $this->attr[$name] = call_user_func_array(array($this, $m), $params);
+		}
+
+		return $default;
+	}
+
+	function attr($name, $default = NULL)
+	{
+		if(array_key_exists($name, $this->attr))
+		{
+			// Если хранимый атрибут — функция, то вызываем её, передав параметр.
+			if(is_callable($this->attr[$name]))
+				return call_user_func($this->attr[$name]);
+
+			// Иначе — просто возвращаем значение.
+			return $this->attr[$name];
+		}
+
+		return $default;
+	}
+
+	function set_attr($attr, $value) { $this->attr[$attr] = $value; return $this; }
+
+	static function foo()
+	{
+		return b2::factory()->load(get_called_class(), NULL);
 	}
 }
