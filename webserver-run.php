@@ -8,7 +8,7 @@ if(!defined('BORS_CORE'))
 	bors::init();
 }
 
-$host = config('webserver.host', 'localhost');
+$host = config('webserver.host', '0.0.0.0');
 $port = config('webserver.port', '8000');
 
 echo "Run php-webserver at http://$host:$port/", PHP_EOL;
