@@ -1,5 +1,7 @@
 <?php
 
+// Класс специально имеет короткое имя и короткие названия методов, чтобы удобнее было быстро прописывать во время отладки.
+
 // http://stackoverflow.com/questions/6079492/php-how-to-print-a-debug-log
 
 class b2d // bors2-debug
