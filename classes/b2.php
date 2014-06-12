@@ -174,8 +174,8 @@ class b2
 				echo "Unknown project class {$project_class}<br/>\n";
 		}
 
-		if(!empty($GLOBALS['composer']))
-			$this->composer = $GLOBALS['composer'];
+		if(!empty($GLOBALS['bors.composer.class_loader']))
+			$this->composer = $GLOBALS['bors.composer.class_loader'];
 	}
 
 	/**
