@@ -225,6 +225,11 @@ class b2
 
 		return $GLOBALS['b2.instance'];
 	}
+
+	function find($class_name)
+	{
+		return new b2_core_find($class_name);
+	}
 }
 
 function b2_load($class_name, $id = NULL) { return b2::factory()->load($class_name, $id); }
