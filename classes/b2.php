@@ -226,7 +226,7 @@ class b2
 		return $GLOBALS['b2.instance'];
 	}
 
-	function find($class_name)
+	static function find($class_name)
 	{
 		return new b2_core_find($class_name);
 	}
