@@ -230,6 +230,8 @@ class b2
 	{
 		return new b2_core_find($class_name);
 	}
+
+	static function tmp_dir() { return config('cache_dir'); }
 }
 
 function b2_load($class_name, $id = NULL) { return b2::factory()->load($class_name, $id); }
