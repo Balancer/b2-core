@@ -191,16 +191,16 @@ defined at {$this->class_file()}<br/>
 			return $this;
 
 		// Проверяем параметры присоединённых объектов
-		if($prop_joins = @$this->_prop_joins)
-			foreach($prop_joins as $x)
+		if(!empty($this->_prop_joins))
+			foreach($this->_prop_joins as $x)
 				if(array_key_exists($name, $x->data))
 					return $this->attr[$name] = $x->data[$name];
 
 		// Проверяем автоматические объекты.
 		$auto_objs = $this->auto_objects();
-		if(($f = @$auto_objs[$name]))
+		if(!empty($auto_objs[$name]))
 		{
-			if(preg_match('/^(\w+)\((\w+)\)$/', $f, $m))
+			if(preg_match('/^(\w+)\((\w+)\)$/', $auto_objs[$name], $m))
 			{
 				try { $value = bors_load($m[1], $this->get($m[2])); }
 				catch(Exception $e) { $value = NULL; }
@@ -210,9 +210,9 @@ defined at {$this->class_file()}<br/>
 
 		// Автоматические целевые объекты (имя класса задаётся)
 		$auto_targs = $this->auto_targets();
-		if(($f = @$auto_targs[$name]))
+		if(!empty($auto_targs[$name]))
 		{
-			if(preg_match('/^(\w+)\((\w+)\)$/', $f, $m))
+			if(preg_match('/^(\w+)\((\w+)\)$/', $auto_targs[$name], $m))
 				return $this->attr[$name] = bors_load($this->get($m[1]), $this->get($m[2]));
 		}
 
