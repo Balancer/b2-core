@@ -24,5 +24,9 @@
 		"psr-4": {
 			"B2\\": ["lib/"]
 		}
-	}
+	},
+
+    "extra": {
+        "bors-classes": "classes"
+    }
 }
