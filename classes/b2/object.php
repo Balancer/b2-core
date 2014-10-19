@@ -108,9 +108,6 @@ class b2_object
 			return $this->attr[$name] = $value;
 		}
 
-		if(bors_lib_orm::get_yaml_notation($this, $name))
-			return $this->attr[$name];
-
 		if($this->strict_auto_fields_check())
 		{
 			$trace = debug_backtrace();
