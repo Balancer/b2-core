@@ -13,7 +13,7 @@ $uri = "http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
 
 $result = NULL;
 
-$b2 = b2::factory();
+$b2 = b2::instance();
 
 	if($b2->conf('debug.execute_trace'))
 		debug_execute_trace("\$b2->load_uri('$uri');");

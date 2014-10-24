@@ -247,6 +247,6 @@ defined at {$this->class_file()}<br/>
 
 	static function foo()
 	{
-		return b2::factory()->load(get_called_class(), NULL);
+		return b2::instance()->load(get_called_class(), NULL);
 	}
 }

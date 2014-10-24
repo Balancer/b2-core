@@ -151,7 +151,13 @@ class b2
 	function composer() { return $this->composer; }
 	function init()
 	{
+		if(!empty($GLOBALS['b2.instance']))
+			return;
+
 		if(file_exists($cf = dirname(__DIR__).'/config.ini'))
+			$this->config_ini($cf);
+
+		if(file_exists($cf = COMPOSER_ROOT.'/config.ini'))
 			$this->config_ini($cf);
 
 		$GLOBALS['b2.instance'] = $this;
@@ -210,7 +216,7 @@ class b2
 		return $dirs;
 	}
 
-	static function factory()
+	static function instance()
 	{
 		if(empty($GLOBALS['b2.instance']))
 		{
@@ -238,10 +244,10 @@ class b2
 		static $instance = NULL;
 
 		if(!$instance)
-			$instance = new b2_log;
+			$instance = new b2_logger;
 
 		return $instance;
 	}
 }
 
-function b2_load($class_name, $id = NULL) { return b2::factory()->load($class_name, $id); }
+function b2_load($class_name, $id = NULL) { return b2::instance()->load($class_name, $id); }
