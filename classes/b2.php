@@ -232,6 +232,16 @@ class b2
 	}
 
 	static function tmp_dir() { return config('cache_dir'); }
+
+	static function log()
+	{
+		static $instance = NULL;
+
+		if(!$instance)
+			$instance = new b2_log;
+
+		return $instance;
+	}
 }
 
 function b2_load($class_name, $id = NULL) { return b2::factory()->load($class_name, $id); }
