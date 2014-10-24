@@ -9,7 +9,8 @@ class b2_logger
 		$b2 = b2::instance();
 		$b2->init();
 //		var_dump($b2->conf('logger.classes', 'b2_logger_meta'));
-		$this->loggers[] = new b2_logger_hipchat;
+//		$this->loggers[] = new b2_logger_hipchat;
+		$this->loggers[] = new b2_logger_monolog;
 	}
 
 	function message($type, $message, $color)
