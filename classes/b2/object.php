@@ -108,7 +108,7 @@ class b2_object
 			return $this->attr[$name] = $value;
 		}
 
-		if($this->strict_auto_fields_check())
+//		if($this->strict_auto_fields_check())
 		{
 			$trace = debug_backtrace();
 			$trace = array_shift($trace);
