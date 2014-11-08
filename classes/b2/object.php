@@ -1,5 +1,9 @@
 <?php
 
+bors_funcs::init();
+
+require_once BORS_CORE.'/inc/functions/locale/ec.php';
+
 class b2_object
 {
 	var $id;
@@ -16,8 +20,12 @@ class b2_object
 	function b2() { return $this->b2_instance; }
 	function set_b2($b2_instance) { $this->b2_instance = $b2_instance; return $this; }
 
+	function class_name() { return get_class($this); }
+
 	function class_file() { return $this->__class_file; }
 	function set_class_file($class_file) { $this->__class_file = $class_file; return $this; }
+
+	function _class_title_def()    { return ec('Объект ').@get_class($this); }	// Именительный: Кто? Что?
 
 	function configure() { }
 	function _configure() { }
@@ -245,8 +253,32 @@ defined at {$this->class_file()}<br/>
 
 	function set_attr($attr, $value) { $this->attr[$attr] = $value; return $this; }
 
+	function set_create_time($unix_time, $db_update = true) { return $this->set('create_time', intval($unix_time), $db_update); }
+	function create_time()
+	{
+		if(!empty($this->data['create_time']))
+			return $this->data['create_time'];
+
+		if(!empty($this->data['modify_time']))
+			return $this->data['modify_time'];
+
+		return NULL;
+	}
+
+	/** Истинный заголовок объекта. Метод или параметр объекта. */
+	function title_true() { return method_exists($this, 'title') ? $this->title() : empty($this->data['title']) ? NULL : $this->data['title']; }
+
 	static function foo()
 	{
 		return b2::instance()->load(get_called_class(), NULL);
+	}
+
+	function __toString()
+	{
+		if($tt = $this->title_true())
+			return $this->class_title() .ec(' «') .$tt .ec('»') .(is_numeric($this->id()) ? "({$this->id()})" : '');
+
+//		return $this->class_name().'://'.$this->id().($this->page() > 1 ? ','.$this->page() : '');
+		return $this->class_name().'://'.$this->id();
 	}
 }
