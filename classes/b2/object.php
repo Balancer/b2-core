@@ -236,6 +236,11 @@ defined at {$this->class_file()}<br/>
 		return $default;
 	}
 
+	function arg($name, $default = NULL)
+	{
+		return $this->attr($name, $default);
+	}
+
 	function attr($name, $default = NULL)
 	{
 		if(array_key_exists($name, $this->attr))
@@ -272,6 +277,29 @@ defined at {$this->class_file()}<br/>
 	{
 		return b2::instance()->load(get_called_class(), NULL);
 	}
+
+	function internal_uri_ascii($limit = false, $ignore_oversize = false)
+	{
+		if(is_object($id = $this->id()))
+			$id = $id->internal_uri_ascii();
+
+		if(is_numeric($id))
+			$uri = $this->class_name().'__'.$id;
+		else
+			$uri = $this->class_name().'__x'.base64_encode($id);
+
+		if($limit && strlen($uri) > $limit)
+		{
+			if(!$ignore_oversize)
+				bors_debug::syslog('need-attention', 'too long ascii uri for '.$this->class_name()."($id)");
+
+			$uri = substr($uri, 0, $limit);
+		}
+
+		return $uri;
+	}
+
+	function internal_uri() { return $this->__toString(); }
 
 	function __toString()
 	{
