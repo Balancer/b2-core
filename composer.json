@@ -23,7 +23,10 @@
     },
 
     "autoload": {
-		"classmap": ["classes/"],
+		"classmap": ["classes/"]
+	},
+
+    "autoload-disabled": {
 		"psr-4": {
 			"B2\\": ["lib/"]
 		}
